@@ -1,0 +1,18 @@
+%YAML:1.0
+
+# video parameters
+offline_data_path: "/mnt/c/work/tmp/offline_4k"
+replay_in_loop: 1 
+dst_parklot_number: 1
+
+# 7564 or 1023
+image_front_chn: 7
+image_left_chn:  5
+image_rear_chn:  6
+image_right_chn: 4
+
+image_width: 3840
+image_height: 2160
+image_fps: 20
+image_format: "jpeg" # jpeg or nv12
+
