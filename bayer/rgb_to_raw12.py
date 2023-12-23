@@ -66,13 +66,34 @@ def bayer_to_raw12_kernel(h, w, img_raw8, endian="big"):
             if endian == "big":
                 ### https://wiki.apertus.org/index.php/RAW12
                 img_raw12[j, i*3]   = raw8_byte0
-                img_raw12[j, i*3+1] = np.bitwise_and((np.right_shift(raw8_byte1,4)), 0x0f)
-                img_raw12[j, i*3+2] = np.bitwise_and((np.left_shift(raw8_byte1,4)), 0xf0)
+                img_raw12[j, i*3+1] = np.bitwise_and((np.right_shift(raw8_byte1, 4)), 0x0f)
+                img_raw12[j, i*3+2] = np.bitwise_and((np.left_shift(raw8_byte1, 4)), 0xf0)
             elif endian == "little":
                 ### https://patches.linaro.org/project/lkml/patch/1502199018-28250-2-git-send-email-todor.tomov@linaro.org/
-                img_raw12[j, i*3]   = raw8_byte0
-                img_raw12[j, i*3+1] = raw8_byte1
+                # img_raw12[j, i*3]   = raw8_byte0
+                # img_raw12[j, i*3+1] = 0x0
+                # img_raw12[j, i*3+2] = raw8_byte1
+                img_raw12[j, i*3]   = 0x0
+                img_raw12[j, i*3]   = np.bitwise_or(np.left_shift(np.bitwise_and(raw8_byte0, 0x01), 3), img_raw12[j, i*3])
+                img_raw12[j, i*3]   = np.bitwise_or(np.left_shift(np.bitwise_and(raw8_byte0, 0x02), 1), img_raw12[j, i*3])
+                img_raw12[j, i*3]   = np.bitwise_or(np.right_shift(np.bitwise_and(raw8_byte0, 0x04), 1), img_raw12[j, i*3])
+                img_raw12[j, i*3]   = np.bitwise_or(np.right_shift(np.bitwise_and(raw8_byte0, 0x08), 3), img_raw12[j, i*3])
+
+                img_raw12[j, i*3+1] = 0x0
+                img_raw12[j, i*3+1] = np.bitwise_or(np.left_shift(np.bitwise_and(raw8_byte0, 0x10), 3), img_raw12[j, i*3+1])
+                img_raw12[j, i*3+1] = np.bitwise_or(np.left_shift(np.bitwise_and(raw8_byte0, 0x20), 1), img_raw12[j, i*3+1])
+                img_raw12[j, i*3+1] = np.bitwise_or(np.right_shift(np.bitwise_and(raw8_byte0, 0x40), 1), img_raw12[j, i*3+1])
+                img_raw12[j, i*3+1] = np.bitwise_or(np.right_shift(np.bitwise_and(raw8_byte0, 0x80), 3), img_raw12[j, i*3+1])
+
                 img_raw12[j, i*3+2] = 0x0
+                img_raw12[j, i*3+2] = np.bitwise_or(np.left_shift(np.bitwise_and(raw8_byte1, 0x01), 7), img_raw12[j, i*3+2])
+                img_raw12[j, i*3+2] = np.bitwise_or(np.left_shift(np.bitwise_and(raw8_byte1, 0x02), 5), img_raw12[j, i*3+2])
+                img_raw12[j, i*3+2] = np.bitwise_or(np.left_shift(np.bitwise_and(raw8_byte1, 0x04), 3), img_raw12[j, i*3+2])
+                img_raw12[j, i*3+2] = np.bitwise_or(np.left_shift(np.bitwise_and(raw8_byte1, 0x08), 1), img_raw12[j, i*3+2])
+                img_raw12[j, i*3+2] = np.bitwise_or(np.right_shift(np.bitwise_and(raw8_byte1, 0x10), 1), img_raw12[j, i*3+2])
+                img_raw12[j, i*3+2] = np.bitwise_or(np.right_shift(np.bitwise_and(raw8_byte1, 0x20), 3), img_raw12[j, i*3+2])
+                img_raw12[j, i*3+2] = np.bitwise_or(np.right_shift(np.bitwise_and(raw8_byte1, 0x40), 5), img_raw12[j, i*3+2])
+                img_raw12[j, i*3+2] = np.bitwise_or(np.right_shift(np.bitwise_and(raw8_byte1, 0x80), 7), img_raw12[j, i*3+2])
             # g_logger.debug("raw12_byte0: {}, raw12_byte1: {}: raw12_byte2: {}".format(img_raw12[j, i*3], img_raw12[j, i*3+1], img_raw12[j, i*3+2]))
     return img_raw12
 
@@ -82,4 +103,5 @@ if __name__ == "__main__":
     img_rgb = read_image(img_path="/home/hugoliu/github/make_dataset/assets/frames/sample_000001.jpeg", peek=False, resize_to=(1080, 1920))
     # img_rgb = torch.randint(low=0, high=255, size=(3, 4, 4), dtype=torch.uint8)
     img_bayer = rgb_to_bayer(img_rgb)
-    img_raw12 = bayer_to_raw12(img_bayer, save_to_path="./raw12_2m.bin", endian="big")
+    img_raw12 = bayer_to_raw12(img_bayer, save_to_path="./raw12_2m.bin", endian="little")
+    # g_logger.info("img_raw12: {}".format(img_raw12))
