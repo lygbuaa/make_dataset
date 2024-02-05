@@ -56,6 +56,7 @@ def bayer_to_raw12_kernel(h, w, img_raw8, endian="big"):
     w12 = int(w*1.5)
     w_steps = w//2
     img_raw12 = np.zeros(shape=(h, w12), dtype=np.uint8)
+    counter = 0
     for j in prange(h):
         for i in prange(w_steps):
             raw8_byte0 = img_raw8[0, j, i*2]
@@ -68,6 +69,10 @@ def bayer_to_raw12_kernel(h, w, img_raw8, endian="big"):
                 img_raw12[j, i*3]   = raw8_byte0
                 img_raw12[j, i*3+1] = np.bitwise_and((np.right_shift(raw8_byte1, 4)), 0x0f)
                 img_raw12[j, i*3+2] = np.bitwise_and((np.left_shift(raw8_byte1, 4)), 0xf0)
+                # img_raw12[j, i*3] = counter%256
+                # img_raw12[j, i*3+1] = (counter+1)%256
+                # img_raw12[j, i*3+2] = (counter+2)%256
+                # counter = counter + 3
             elif endian == "little":
                 ### https://patches.linaro.org/project/lkml/patch/1502199018-28250-2-git-send-email-todor.tomov@linaro.org/
                 # img_raw12[j, i*3]   = raw8_byte0
@@ -100,8 +105,8 @@ def bayer_to_raw12_kernel(h, w, img_raw8, endian="big"):
 if __name__ == "__main__":
     plogging.init_logger(log_dir="./", file_name="rgb_to_raw12", level=logging.DEBUG)
     g_logger = plogging.get_logger()
-    img_rgb = read_image(img_path="/home/hugoliu/github/make_dataset/assets/frames/sample_000001.jpeg", peek=False, resize_to=(1080, 1920))
+    img_rgb = read_image(img_path="/home/hugoliu/tmp/lerong_fisheye_1080p.jpg", peek=False, resize_to=(2160, 3840))
     # img_rgb = torch.randint(low=0, high=255, size=(3, 4, 4), dtype=torch.uint8)
     img_bayer = rgb_to_bayer(img_rgb)
-    img_raw12 = bayer_to_raw12(img_bayer, save_to_path="./raw12_2m.bin", endian="little")
+    img_raw12 = bayer_to_raw12(img_bayer, save_to_path="./raw12_8m_lr.bin", endian="big")
     # g_logger.info("img_raw12: {}".format(img_raw12))

@@ -3,7 +3,9 @@ project(make_dataset_project)
 
 set(CMAKE_BUILD_TYPE "Release")
 set(CMAKE_CXX_FLAGS "-std=c++11")
-set(CMAKE_CXX_FLAGS_RELEASE "-O0 -Wall -g -fPIC -rdynamic -export-dynamic")
+set(CMAKE_CXX_FLAGS_RELEASE "-O2 -Wall -g -fPIC -rdynamic -export-dynamic")
+
+add_compile_options(-msse4)
 
 # using opencv-4.2 with opencl support, but not cuda
 find_package(OpenCV REQUIRED)
@@ -20,6 +22,7 @@ include_directories(
   ${OpenCV_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/inc/
   ${PROJECT_SOURCE_DIR}/common/
+  ${PROJECT_SOURCE_DIR}/rgb2yuv/
 )
 
 EXECUTE_PROCESS(COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE ARCHITECTURE)
@@ -42,6 +45,18 @@ target_link_libraries(make_offline_data_bin
     -pthread
 )
 
-install (TARGETS make_offline_data_bin DESTINATION inject_export)
-# install (FILES assets DESTINATION inject_export/assets)
-install (FILES make_data.sh DESTINATION inject_export)
+add_executable(test_rgb2yuyv 
+               rgb2yuv/test_rgb2yuyv.cc
+               rgb2yuv/cpu.cc 
+               rgb2yuv/rgb2yuyv.cc
+)
+target_link_libraries(test_rgb2yuyv
+    -ldl
+    -lrt
+    -pthread
+)
+
+install (TARGETS make_offline_data_bin DESTINATION install_export)
+install (TARGETS test_rgb2yuyv DESTINATION install_export)
+# install (FILES assets DESTINATION install_export/assets)
+install (FILES make_data.sh DESTINATION install_export)
