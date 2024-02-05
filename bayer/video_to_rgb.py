@@ -9,7 +9,7 @@ import numpy as np
 import cv2
 
 if __name__ == "__main__":
-    cap = cv2.VideoCapture("/home/hugoliu/alaska/data/carla_l2_town04_highway/town04_highway_240130_fov90_4k.avi")
+    cap = cv2.VideoCapture("/home/hugoliu/alaska/data/carla_l2_town04_highway/town04_highway_left_turn.mp4")
     counter = 0
     while True:
         ret, frame = cap.read()
@@ -21,5 +21,5 @@ if __name__ == "__main__":
         cv2.imshow("peek_image", frame)
         cv2.waitKey(1000)
         img_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        with open("./rgb_4m.bin", "wb") as file:
+        with open("./2m.rgb3", "wb") as file:
             file.write(img_rgb.tobytes())

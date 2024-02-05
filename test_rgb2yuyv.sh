@@ -15,6 +15,9 @@ DATA_PATh=${PRJ_ROOT_PATH}/data
 BIN_PATH=${PRJ_ROOT_PATH}/build
 CONFIG_PATH=${PRJ_ROOT_PATH}/config/video.yaml
 # IMG_PATH=${PRJ_ROOT_PATH}/assets/img_front.png
-IMG_PATH=${PRJ_ROOT_PATH}/assets/frames
+IMG_PATH=${PRJ_ROOT_PATH}/rgb2yuv
+OUT_PATH=${PRJ_ROOT_PATH}/build
+IMG_W=1280
+IMG_H=720
 
-${BIN_PATH}/test_rgb2yuyv
+${BIN_PATH}/test_rgb2yuyv ${IMG_PATH}/720p.rgb3 ${IMG_W} ${IMG_H} ${OUT_PATH}/720p.uyvy

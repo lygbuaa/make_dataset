@@ -21,15 +21,15 @@ static int rgb24_to_yuyv(unsigned char const*       rgb,
                          unsigned int               yuv_linesize,
                          signed short int const*    rgb2yuv_coef){
   int i = 0, j = 0;
-  const unsigned int yb      = ((unsigned short int const*)(rgb2yuv_coef))[0];
+  const unsigned int yr      = ((unsigned short int const*)(rgb2yuv_coef))[0];
   const unsigned int yg      = ((unsigned short int const*)(rgb2yuv_coef))[1];
-  const unsigned int yr      = ((unsigned short int const*)(rgb2yuv_coef))[2];
-  const unsigned int ub      = ((unsigned short int const*)(rgb2yuv_coef))[3];
+  const unsigned int yb      = ((unsigned short int const*)(rgb2yuv_coef))[2];
+  const unsigned int ur      = ((unsigned short int const*)(rgb2yuv_coef))[3];
   const unsigned int ug      = ((unsigned short int const*)(rgb2yuv_coef))[4];
-  const unsigned int ur      = ((unsigned short int const*)(rgb2yuv_coef))[5];
-  const unsigned int vb      = ((unsigned short int const*)(rgb2yuv_coef))[6];
+  const unsigned int ub      = ((unsigned short int const*)(rgb2yuv_coef))[5];
+  const unsigned int vr      = ((unsigned short int const*)(rgb2yuv_coef))[6];
   const unsigned int vg      = ((unsigned short int const*)(rgb2yuv_coef))[7];
-  const unsigned int vr      = ((unsigned short int const*)(rgb2yuv_coef))[8];
+  const unsigned int vb      = ((unsigned short int const*)(rgb2yuv_coef))[8];
 
   const __m128i  y_coef0     = _mm_set1_epi32(yb | (yg << 16));
   const __m128i  y_coef1     = _mm_set1_epi32(yr);
@@ -223,15 +223,15 @@ static int rgb24_to_uyvy(unsigned char const*      rgb,
                          unsigned int              yuv_linesize,
                          signed short int const*   rgb2yuv_coef){
   int i = 0, j = 0;
-  const unsigned int yb      = ((unsigned short int const*)(rgb2yuv_coef))[0];
+  const unsigned int yr      = ((unsigned short int const*)(rgb2yuv_coef))[0];
   const unsigned int yg      = ((unsigned short int const*)(rgb2yuv_coef))[1];
-  const unsigned int yr      = ((unsigned short int const*)(rgb2yuv_coef))[2];
-  const unsigned int ub      = ((unsigned short int const*)(rgb2yuv_coef))[3];
+  const unsigned int yb      = ((unsigned short int const*)(rgb2yuv_coef))[2];
+  const unsigned int ur      = ((unsigned short int const*)(rgb2yuv_coef))[3];
   const unsigned int ug      = ((unsigned short int const*)(rgb2yuv_coef))[4];
-  const unsigned int ur      = ((unsigned short int const*)(rgb2yuv_coef))[5];
-  const unsigned int vb      = ((unsigned short int const*)(rgb2yuv_coef))[6];
+  const unsigned int ub      = ((unsigned short int const*)(rgb2yuv_coef))[5];
+  const unsigned int vr      = ((unsigned short int const*)(rgb2yuv_coef))[6];
   const unsigned int vg      = ((unsigned short int const*)(rgb2yuv_coef))[7];
-  const unsigned int vr      = ((unsigned short int const*)(rgb2yuv_coef))[8];
+  const unsigned int vb      = ((unsigned short int const*)(rgb2yuv_coef))[8];
 
   const __m128i  y_coef0     = _mm_set1_epi32(yb | (yg << 16));
   const __m128i  y_coef1     = _mm_set1_epi32(yr);
@@ -598,21 +598,22 @@ int  rgb2yuyv(unsigned char const*  rgb,
     return -1;
   }
 
+  /** shift these coefs if r-g-b changed to b-g-r */
   signed short int  rgb2yuv_coef[] = {
     //Y, coef
-    (signed short int)(0.114f * ((float)(1 << QN_BITS)) + 0.5f), 
-    (signed short int)(0.587f * ((float)(1 << QN_BITS)) + 0.5f), 
-    (signed short int)(0.299f * ((float)(1 << QN_BITS)) + 0.5f),
+    (signed short int)(0.114f * ((float)(1 << QN_BITS)) + 0.5f), //r
+    (signed short int)(0.587f * ((float)(1 << QN_BITS)) + 0.5f), //g
+    (signed short int)(0.299f * ((float)(1 << QN_BITS)) + 0.5f), //b
 
     //U, coef
-     (signed short int)(0.5f   * ((float)(1 << QN_BITS)) + 0.5f), 
-    -(signed short int)(0.331f * ((float)(1 << QN_BITS)) + 0.5f), 
-    -(signed short int)(0.169f * ((float)(1 << QN_BITS)) + 0.5f), 
+     (signed short int)(0.5f   * ((float)(1 << QN_BITS)) + 0.5f), //r
+    -(signed short int)(0.331f * ((float)(1 << QN_BITS)) + 0.5f), //g
+    -(signed short int)(0.169f * ((float)(1 << QN_BITS)) + 0.5f), //b
 
     //V, coef
-    -(signed short int)(0.081f * ((float)(1 << QN_BITS)) + 0.5f), 
-    -(signed short int)(0.419f * ((float)(1 << QN_BITS)) + 0.5f), 
-     (signed short int)(0.5f   * ((float)(1 << QN_BITS)) + 0.5f), 
+    -(signed short int)(0.081f * ((float)(1 << QN_BITS)) + 0.5f), //r
+    -(signed short int)(0.419f * ((float)(1 << QN_BITS)) + 0.5f), //g
+     (signed short int)(0.5f   * ((float)(1 << QN_BITS)) + 0.5f), //b
   };
 
   if(0 == swap_yuv){

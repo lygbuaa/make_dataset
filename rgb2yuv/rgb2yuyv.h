@@ -5,6 +5,7 @@
 extern "C"{
 #endif
 
+/** swap_yuv=0 for yuyv, swap_yuv=1 for uyvy */
 int  rgb2yuyv(unsigned char const*  rgb,
               unsigned int          width,
               unsigned int          height,
